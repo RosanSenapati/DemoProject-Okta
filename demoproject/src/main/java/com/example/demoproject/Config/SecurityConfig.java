@@ -29,7 +29,6 @@ public class SecurityConfig {
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(authenticationSuccessHandler()) // Redirect after login
                 )
-
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt() // Let Okta handle JWT configuration
                 );
