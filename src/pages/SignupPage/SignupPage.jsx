@@ -1,32 +1,29 @@
-import React from 'react';
-import './SignUpPage.css';
-import { Link, useNavigate } from 'react-router-dom';
-import { Formik, Field, Form, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-import axios from 'axios';
-import {toast,ToastContainer} from 'react-toastify'
-
-
+import React from "react";
+import "./SignUpPage.css";
+import { Link, useNavigate } from "react-router-dom";
+import { Formik, Field, Form, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
 
 // Yup validation schema
 const validationSchema = Yup.object({
   fullName: Yup.string()
-    .required('Full Name is required')
-    .min(3, 'Full Name must be at least 3 characters'),
+    .required("Full Name is required")
+    .min(3, "Full Name must be at least 3 characters"),
   email: Yup.string()
-    .required('Email is required')
-    .email('Invalid email format')
-    .matches(/^[A-Za-z0-9+_.-]+@(.+)$/,'Invalid email format'),
+    .required("Email is required")
+    .email("Invalid email format"),
   password: Yup.string()
-    .required('Password is required')
-    .min(6, 'Password must be at least 6 characters')
+    .required("Password is required")
+    .min(6, "Password must be at least 6 characters")
     .matches(
       /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/,
-      'Password must contain at least one uppercase letter, one number, and one special character'
+      "Password must contain at least one uppercase letter, one number, and one special character"
     ),
   confirmPassword: Yup.string()
-    .required('Please confirm your password')
-    .oneOf([Yup.ref('password'), null], 'Passwords must match'),
+    .required("Please confirm your password")
+    .oneOf([Yup.ref("password"), null], "Passwords must match"),
 });
 
 function SignupPage() {
@@ -34,41 +31,45 @@ function SignupPage() {
 
   return (
     <div className="wrapper shadow-lg">
-      <div className="title"><span>Sign-Up Form</span></div>
+      <div className="title">
+        <span>Sign-Up Form</span>
+      </div>
       <Formik
         initialValues={{
-          fullName: '',
-          email: '',
-          password: '',
-          confirmPassword: '',
+          fullName: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
         }}
         validationSchema={validationSchema}
         onSubmit={async (values) => {
           console.log(values);
           try {
-           const res = await axios.post("http://localhost:8081/user", {
-            name: values.fullName,
-            email: values.email,
-            password: values.confirmPassword,
-            },{
-              withCredentials:false
-            });
+            const res = await axios.post(
+              "http://localhost:8081/user",
+              {
+                name: values.fullName,
+                email: values.email,
+                password: values.confirmPassword,
+              },
+              {
+                withCredentials: false,
+              }
+            );
 
             console.log(res);
             console.log(res.data);
-           if(res)
-           {
-            alert('User Registration Successfull');
-            navigate('/');
-           }
-              // toast.success('User Registration Successfully');
-            
+            if (res) {
+              alert("User Registration Successfull");
+              navigate("/");
+            }
+            // toast.success('User Registration Successfully');
           } catch (err) {
-            toast.error('Something Went Wrong!!!!');
+            console.log(err.response.data.message);
+            toast.warning(err.response.data.message);
             console.log(err);
           }
-        }
-        }
+        }}
       >
         {({ errors, touched }) => (
           <Form>
@@ -92,9 +93,17 @@ function SignupPage() {
 
             <div className="row">
               <i className="bi bi-lock-fill"></i>
-              <Field type="password" name="confirmPassword" placeholder="Confirm Password" />
+              <Field
+                type="password"
+                name="confirmPassword"
+                placeholder="Confirm Password"
+              />
             </div>
-            <ErrorMessage name="confirmPassword" component="div" className="error" />
+            <ErrorMessage
+              name="confirmPassword"
+              component="div"
+              className="error"
+            />
 
             <div className="row button">
               <button type="submit">Sign Up</button>
@@ -106,6 +115,18 @@ function SignupPage() {
           </Form>
         )}
       </Formik>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 }

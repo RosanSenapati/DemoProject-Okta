@@ -1,10 +1,15 @@
 package com.example.demoproject.Config;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -13,6 +18,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import java.io.IOException;
 import java.util.List;
 
 @Configuration
@@ -39,18 +45,18 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
-        return (request, response, authentication) -> {
-            // Get the authenticated user details (OAuth2User)
-            OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
+        return new AuthenticationSuccessHandler() {
+            @Override
+            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                                Authentication authentication) throws IOException, ServletException, IOException {
+                OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) authentication;
+                OAuth2User user = authToken.getPrincipal();
 
-            // Get the 'given_name' from the OAuth2User attributes
-            String givenName = oauth2User.getAttribute("given_name");  // Assuming the given_name is part of the attributes
+                String givenName = (String) user.getAttributes().get("given_name");  // Get given_name from OAuth2 attributes
 
-            // Construct the redirect URL with the 'given_name'
-            String redirectUrl = "http://localhost:5173/home/" + givenName;
-
-            // Redirect to the URL
-            response.sendRedirect(redirectUrl);
+                // Redirect to the home page with the user's given_name
+                response.sendRedirect("http://localhost:5173/home/" + givenName);  // Adjust the URL to your frontend
+            }
         };
     }
 

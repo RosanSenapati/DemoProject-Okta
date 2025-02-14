@@ -10,9 +10,9 @@
 }
 
 body {
-  display: flex;
+  /* display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: center; */
   height: 100vh;
   padding: 15px;
   background: white;
@@ -71,7 +71,7 @@ form .row input:focus {
 }
 
 form .row input::placeholder {
-  color: #999;
+  color: navy;
 }
 
 .wrapper form .row i {
