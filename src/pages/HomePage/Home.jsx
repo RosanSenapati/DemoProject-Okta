@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useParams } from 'react-router-dom'
 import {toast,ToastContainer } from 'react-toastify'
 import './Home.css';
+import axios from 'axios'
 export default function Home() {
   const {name} = useParams();
   console.log(name);
@@ -11,7 +12,6 @@ const flag = true;
   useEffect(()=>{
     toast.success('Logged in Successfully')
   },[])
-
   return (
   
     // <div className="container title bg-white d-flex justify-content-center flex-column  ">

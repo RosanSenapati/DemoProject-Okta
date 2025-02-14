@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -38,10 +39,21 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
-        SimpleUrlAuthenticationSuccessHandler successHandler = new SimpleUrlAuthenticationSuccessHandler();
-        successHandler.setDefaultTargetUrl("http://localhost:5173/home"); // Redirect here after login
-        return successHandler;
+        return (request, response, authentication) -> {
+            // Get the authenticated user details (OAuth2User)
+            OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
+
+            // Get the 'given_name' from the OAuth2User attributes
+            String givenName = oauth2User.getAttribute("given_name");  // Assuming the given_name is part of the attributes
+
+            // Construct the redirect URL with the 'given_name'
+            String redirectUrl = "http://localhost:5173/home/" + givenName;
+
+            // Redirect to the URL
+            response.sendRedirect(redirectUrl);
+        };
     }
+
 
     @Bean
     public CorsFilter corsFilter() {
